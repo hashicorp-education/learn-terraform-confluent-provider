@@ -30,18 +30,18 @@ resource "confluent_service_account" "admin" {
 
 resource "confluent_service_account" "orders_producer" {
   display_name = "orders_producer"
-  description  = "Service account to produce to 'orders' topic of 'inventory' Kafka cluster"
+  description  = "Service account that can write messages to the 'orders' topic"
 }
 
 resource "confluent_service_account" "orders_consumer" {
   display_name = "orders_consumer"
-  description  = "Service account to consume from 'orders' topic of 'inventory' Kafka cluster"
+  description  = "Service account that can read messages from the 'orders' topic"
 }
 
 
 resource "confluent_api_key" "admin" {
   display_name = "admin"
-  description  = "Kafka API Key that is owned by 'admin' service account"
+  description  = "Kafka API Key owned by the 'admin' service account"
   owner {
     id          = confluent_service_account.admin.id
     api_version = confluent_service_account.admin.api_version
@@ -68,7 +68,7 @@ resource "confluent_api_key" "admin" {
 
 resource "confluent_api_key" "orders_consumer" {
   display_name = "orders_consumer"
-  description  = "Kafka API Key that is owned by 'orders_consumer' service account"
+  description  = "Kafka API Key owned by the 'orders_consumer' service account"
   owner {
     id          = confluent_service_account.orders_consumer.id
     api_version = confluent_service_account.orders_consumer.api_version
@@ -88,7 +88,7 @@ resource "confluent_api_key" "orders_consumer" {
 
 resource "confluent_api_key" "orders_producer" {
   display_name = "orders_producer"
-  description  = "Kafka API Key that is owned by 'orders_producer' service account"
+  description  = "Kafka API Key owned by the 'orders_producer' service account"
   owner {
     id          = confluent_service_account.orders_producer.id
     api_version = confluent_service_account.orders_producer.api_version
@@ -137,7 +137,6 @@ resource "confluent_kafka_topic" "orders" {
   }
   topic_name       = "orders"
   rest_endpoint    = confluent_kafka_cluster.inventory.rest_endpoint
-  partitions_count = 6
   credentials {
     key    = confluent_api_key.admin.id
     secret = confluent_api_key.admin.secret
