@@ -1,6 +1,6 @@
+# The provider will pull credentials from two environment variables:
+# CONFLUENT_CLOUD_API_KEY and CONFLUENT_CLOUD_API_SECRET
 provider "confluent" {
-  # The provider will pull credentials from two environment variables:
-  # CONFLUENT_CLOUD_API_KEY and CONFLUENT_CLOUD_API_SECRET
 }
 
 resource "confluent_environment" "tutorial" {
