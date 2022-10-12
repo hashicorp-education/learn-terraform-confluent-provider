@@ -1,11 +1,10 @@
 terraform {
-  /*
   cloud {
     workspaces {
-      name = "learn-terraform-confluent-provider-alan"
+      name = "learn-terraform-confluent-provider"
     }
   }
-  */
+
   required_providers {
     confluent = {
       source  = "confluentinc/confluent"
