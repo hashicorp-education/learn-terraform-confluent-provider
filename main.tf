@@ -22,7 +22,7 @@ resource "confluent_kafka_cluster" "inventory" {
 }
 
 
-# Cluster administrator service account
+
 resource "confluent_service_account" "admin" {
   display_name = "admin"
   description  = "Cluster management service account"
@@ -37,6 +37,27 @@ resource "confluent_service_account" "orders_consumer" {
   display_name = "orders_consumer"
   description  = "Service account that can read messages from the 'orders' topic"
 }
+
+
+
+resource "confluent_role_binding" "admin" {
+  principal   = "User:${confluent_service_account.admin.id}"
+  role_name   = "CloudClusterAdmin"
+  crn_pattern = confluent_kafka_cluster.inventory.rbac_crn
+}
+
+resource "confluent_role_binding" "orders_producer_write_to_topic" {
+  principal   = "User:${confluent_service_account.orders_producer.id}"
+  role_name   = "DeveloperWrite"
+  crn_pattern = "${confluent_kafka_cluster.inventory.rbac_crn}/kafka=${confluent_kafka_cluster.inventory.id}/topic=${confluent_kafka_topic.orders.topic_name}"
+}
+
+resource "confluent_role_binding" "orders_consumer_read_from_topic" {
+  principal   = "User:${confluent_service_account.orders_consumer.id}"
+  role_name   = "DeveloperRead"
+  crn_pattern = "${confluent_kafka_cluster.inventory.rbac_crn}/kafka=${confluent_kafka_cluster.inventory.id}/topic=${confluent_kafka_topic.orders.topic_name}"
+}
+
 
 
 resource "confluent_api_key" "admin" {
@@ -105,29 +126,6 @@ resource "confluent_api_key" "orders_producer" {
     }
   }
 }
-
-
-
-
-resource "confluent_role_binding" "admin" {
-  principal   = "User:${confluent_service_account.admin.id}"
-  role_name   = "CloudClusterAdmin"
-  crn_pattern = confluent_kafka_cluster.inventory.rbac_crn
-}
-
-resource "confluent_role_binding" "orders_producer_write_to_topic" {
-  principal   = "User:${confluent_service_account.orders_producer.id}"
-  role_name   = "DeveloperWrite"
-  crn_pattern = "${confluent_kafka_cluster.inventory.rbac_crn}/kafka=${confluent_kafka_cluster.inventory.id}/topic=${confluent_kafka_topic.orders.topic_name}"
-}
-
-resource "confluent_role_binding" "orders_consumer_read_from_topic" {
-  principal   = "User:${confluent_service_account.orders_consumer.id}"
-  role_name   = "DeveloperRead"
-  crn_pattern = "${confluent_kafka_cluster.inventory.rbac_crn}/kafka=${confluent_kafka_cluster.inventory.id}/topic=${confluent_kafka_topic.orders.topic_name}"
-}
-
-
 
 
 
